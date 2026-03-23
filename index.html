@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diary of a Pencil — Download</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1208;
+      --paper: #f5f0e8;
+      --ruled: #d4cfc4;
+      --pencil: #6b5c3e;
+      --accent: #e85d26;
+      --accent2: #3a7ca5;
+      --shadow: rgba(26,18,8,0.18);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Ruled paper lines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          transparent,
+          transparent 31px,
+          var(--ruled) 31px,
+          var(--ruled) 32px
+        );
+      background-size: 100% 32px;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.55;
+    }
+
+    /* Red margin line */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0; left: 68px; bottom: 0;
+      width: 2px;
+      background: rgba(232,93,38,0.35);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      gap: 0;
+    }
+
+    /* Notebook holes */
+    .holes {
+      position: fixed;
+      left: 0; top: 0; bottom: 0;
+      width: 68px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      align-items: center;
+      padding: 60px 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .hole {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--paper);
+      border: 2px solid var(--ruled);
+      box-shadow: inset 0 1px 3px var(--shadow);
+    }
+
+    /* Card */
+    .card {
+      background: #fff;
+      border-radius: 3px;
+      box-shadow:
+        0 2px 0 var(--ruled),
+        4px 6px 24px var(--shadow),
+        8px 10px 0 -2px #e8e3d8;
+      padding: 52px 52px 44px;
+      max-width: 520px;
+      width: 100%;
+      margin-left: 40px;
+      position: relative;
+      animation: slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px) rotate(-0.5deg); }
+      to   { opacity: 1; transform: translateY(0) rotate(-0.5deg); }
+    }
+
+    .card-inner {
+      transform: rotate(0.5deg);
+    }
+
+    /* Pencil doodle top */
+    .doodle {
+      position: absolute;
+      top: -30px; right: 32px;
+      font-size: 2.4rem;
+      transform: rotate(20deg);
+      filter: drop-shadow(1px 2px 2px var(--shadow));
+    }
+
+    .label {
+      font-family: 'Caveat', cursive;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 6vw, 2.9rem);
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--pencil);
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--pencil);
+      font-weight: 300;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    /* Progress / status */
+    .status-bar {
+      background: var(--paper);
+      border: 1.5px solid var(--ruled);
+      border-radius: 2px;
+      height: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .status-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--pencil) 0px,
+        var(--pencil) 6px,
+        #9c8b6e 6px,
+        #9c8b6e 12px
+      );
+      background-size: 200% 100%;
+      width: 0%;
+      transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+      border-radius: 1px;
+    }
+
+    .status-text {
+      font-family: 'Caveat', cursive;
+      font-size: 1rem;
+      color: var(--pencil);
+      margin-bottom: 28px;
+      min-height: 24px;
+    }
+
+    /* Big download button */
+    .btn-download {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      border-radius: 2px;
+      padding: 18px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+      box-shadow: 4px 4px 0 var(--pencil);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .btn-download::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: white;
+      opacity: 0;
+      transition: opacity 0.14s;
+    }
+
+    .btn-download:hover {
+      background: #2e2010;
+      box-shadow: 6px 6px 0 var(--pencil);
+      transform: translate(-2px, -2px);
+    }
+    .btn-download:hover::after { opacity: 0.05; }
+    .btn-download:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--pencil); }
+
+    .btn-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+    .btn-text strong { display: block; font-size: 1.05rem; }
+    .btn-text span { font-size: 0.78rem; opacity: 0.65; font-weight: 300; }
+
+    /* Requirements note */
+    .req {
+      font-size: 0.78rem;
+      color: var(--pencil);
+      opacity: 0.8;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ruled);
+      font-size: 0.75rem;
+      margin-bottom: 14px;
+      font-family: 'Caveat', cursive;
+      color: var(--pencil);
+      opacity: 0.6;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--ruled);
+    }
+
+    /* Alt link */
+    .alt-link {
+      display: block;
+      text-align: center;
+      font-size: 0.83rem;
+      color: var(--accent2);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 10px;
+      border: 1.5px dashed var(--ruled);
+      border-radius: 2px;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .alt-link:hover {
+      border-color: var(--accent2);
+      background: rgba(58,124,165,0.05);
+    }
+
+    /* Footer */
+    .footnote {
+      font-family: 'Caveat', cursive;
+      font-size: 0.9rem;
+      color: var(--pencil);
+      opacity: 0.5;
+      margin-top: 32px;
+      text-align: center;
+    }
+
+    /* Scribble decoration */
+    .scribble {
+      position: fixed;
+      bottom: 32px; right: 24px;
+      opacity: 0.07;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @media (max-width: 600px) {
+      .card { padding: 36px 28px 32px; margin-left: 24px; }
+      body::after { left: 48px; }
+      .holes { width: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Notebook holes -->
+  <div class="holes" aria-hidden="true">
+    <div class="hole"></div>
+    <div class="hole"></div>
+    <div class="hole"></div>
+    <div class="hole"></div>
+  </div>
+
+  <!-- Background scribble -->
+  <svg class="scribble" width="260" height="260" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 240 Q80 10 130 130 Q180 250 240 20" stroke="#1a1208" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M10 200 Q60 40 110 150 Q160 260 220 60" stroke="#1a1208" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.5"/>
+  </svg>
+
+  <div class="page">
+    <div class="card">
+      <div class="doodle" aria-hidden="true">✏️</div>
+      <div class="card-inner">
+        <div class="label">Free Download · Windows</div>
+        <h1>Diary of a<br><em>Pencil God</em></h1>
+        <p class="subtitle">Your download will begin automatically.<br>Windows 10 / 11 &nbsp;·&nbsp; 64-bit</p>
+
+        <div class="status-bar" role="progressbar" aria-label="Detecting system">
+          <div class="status-fill" id="bar"></div>
+        </div>
+        <p class="status-text" id="status-text">Detecting your system…</p>
+
+        <a id="dl-btn" class="btn-download" href="#" download>
+          <span class="btn-icon">⬇</span>
+          <span class="btn-text">
+            <strong>Download for Windows</strong>
+            <span id="arch-label">Detecting architecture…</span>
+          </span>
+        </a>
+
+        <p class="req">Requires Windows 10/11 · 64-bit · ~100 MB</p>
+
+        <div class="divider">or</div>
+
+        <a id="alt-link" class="alt-link" href="https://github.com/daimularotundo23-source/Diary-of-a-Pencil-/releases" target="_blank" rel="noopener">
+          Browse all releases on GitHub →
+        </a>
+      </div>
+    </div>
+
+    <p class="footnote">✏️ &nbsp; Write your own story.</p>
+  </div>
+
+  <script>
+    // ── Download links ──────────────────────────────────────────────
+    const LINKS = {
+      x64:   "https://github.com/daimularotundo23-source/Diary-of-a-Pencil-/releases/download/Game/DiaryOfAPencilGod_Setup.exe",
+      arm64: "https://github.com/daimularotundo23-source/Diary-of-a-Pencil-/releases/download/Game/DiaryOfAPencilGod_Setup.exe"
+      // ↑ Update arm64 link if you add a separate ARM build
+    };
+
+    // ── Architecture detection ───────────────────────────────────────
+    function detectArch() {
+      const ua = navigator.userAgent;
+      const platform = (navigator.userAgentData?.platform || navigator.platform || "").toLowerCase();
+      if (/arm64|aarch64/i.test(ua) || /arm/i.test(platform)) return "arm64";
+      return "x64";
+    }
+
+    async function detectArchAsync() {
+      // Try modern UADataHints API first
+      if (navigator.userAgentData?.getHighEntropyValues) {
+        try {
+          const hints = await navigator.userAgentData.getHighEntropyValues(["architecture", "bitness"]);
+          if (hints.architecture === "arm") return "arm64";
+          return "x64";
+        } catch (_) {}
+      }
+      return detectArch();
+    }
+
+    // ── UI update ────────────────────────────────────────────────────
+    const bar        = document.getElementById("bar");
+    const statusText = document.getElementById("status-text");
+    const dlBtn      = document.getElementById("dl-btn");
+    const archLabel  = document.getElementById("arch-label");
+    const altLink    = document.getElementById("alt-link");
+
+    function setProgress(pct) {
+      bar.style.width = pct + "%";
+    }
+
+    async function init() {
+      // Step 1 — detecting
+      setProgress(30);
+      await delay(400);
+
+      const arch = await detectArchAsync();
+      const url  = LINKS[arch] ?? LINKS.x64;
+
+      // Step 2 — setting up
+      setProgress(70);
+      statusText.textContent = arch === "arm64"
+        ? "ARM64 processor detected…"
+        : "x64 processor detected…";
+      await delay(500);
+
+      // Step 3 — done
+      setProgress(100);
+      statusText.textContent = "✓  Ready! Starting download…";
+
+      // Update button & link
+      dlBtn.href = url;
+      archLabel.textContent = arch === "arm64" ? "ARM64 (Qualcomm / Surface)" : "x64 (Intel / AMD)";
+
+      // Trigger auto-download
+      await delay(300);
+      window.location.href = url;
+    }
+
+    function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    init();
+  </script>
+</body>
+</html>
